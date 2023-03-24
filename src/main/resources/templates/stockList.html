@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="~{/layout}" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>公司列表</title>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
+</head>
+<style>
+    table th,
+    table td {
+      border: solid 1px;
+    }
+
+</style>
+<body>
+<nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" th:href="@{/list}">All</a>
+            <a class="navbar-brand" th:href="@{/hold}">Hold</a>
+        </div>
+    </div>
+</nav>
+<form>
+    <div>
+        <input type="radio" id="shortBuy" name="buy" value="shortBuy">买(短)</input>
+        <input type="radio" id="longBuy" name="buy" value="longBuy">买(长)</input>
+        <button>查询</button>
+    </div>
+</form>
+<table class="table table-bordered" style="width: 100%, border-spacing:0px;border-collapse: collapse;">
+    <thead>
+    <tr>
+        <th>公司名称</th>
+        <th>股票代码</th>
+        <th>ATR</th>
+        <th>MA10</th>
+        <th>MA20</th>
+        <th>MA55</th>
+        <th>收盘价</th>
+        <th>买(短)</th>
+        <th>买(M20+ATR)</th>
+        <th>卖(短)</th>
+        <th>卖(M10-ATR)</th>
+        <th>买(长)</th>
+        <th>买(M55+ATR)</th>
+        <th>卖(长)</th>
+        <th>卖(M20-ATR)</th>
+        <th>详情</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="stock, status : ${stocks}">
+        <td th:style="'background-color:'+(${status.odd}?'#fff':'#f5f2eb')"><span th:text="${stock.name}"> name </span>
+        </td>
+        <td th:style="'background-color:'+(${status.odd}?'#fff':'#f5f2eb')"><span th:text="${stock.code}"> code </span>
+        </td>
+        <td th:style="'background-color:'+(${status.odd}?'#fff':'#f5f2eb')"><span
+                th:text="${stock.averageTrueRange}"> averageTrueRange </span></td>
+        <td th:style="'background-color:'+(${status.odd}?'#fff':'#f5f2eb')"><span
+                th:text="${stock.ma10Price}"> ma10Price </span></td>
+        <td th:style="'background-color:'+(${status.odd}?'#fff':'#f5f2eb')"><span
+                th:text="${stock.ma20Price}"> ma20Price </span></td>
+        <td th:style="'background-color:'+(${status.odd}?'#fff':'#f5f2eb')"><span
+                th:text="${stock.ma55Price}"> ma55Price </span></td>
+        <td th:style="'background-color:'+(${status.odd}?'#fff':'#f5f2eb')"><span
+                th:text="${stock.lastClose}"> close </span></td>
+        <td th:style="'background-color:'+(${status.odd}?'#fff':'#f5f2eb')" align="center"><img
+                th:if="${stock.shortBuySignal}" th:src="@{icon/buy.png}" height="20px" width="20px"></td>
+        <td th:style="'background-color:'+(${status.odd}?'#fff':'#f5f2eb')" align="center"><img
+                th:if="${stock.shortMaxBuySignal}" th:src="@{icon/buy.png}" height="20px" width="20px"></td>
+        <td th:style="'background-color:'+(${status.odd}?'#fff':'#f5f2eb')" align="center"><img
+                th:if="${stock.shortSellSignal}" th:src="@{icon/sell.png}" height="20px" width="20px"></td>
+        <td th:style="'background-color:'+(${status.odd}?'#fff':'#f5f2eb')" align="center"><img
+                th:if="${stock.shortMinSellSignal}" th:src="@{icon/sell.png}" height="20px" width="20px"></td>
+        <td th:style="'background-color:'+(${status.odd}?'#fff':'#f5f2eb')" align="center"><img
+                th:if="${stock.longBuySignal}" th:src="@{icon/buy.png}" height="20px" width="20px"></td>
+        <td th:style="'background-color:'+(${status.odd}?'#fff':'#f5f2eb')" align="center"><img
+                th:if="${stock.longMaxSellSignal}" th:src="@{icon/buy.png}" height="20px" width="20px"></td>
+        <td th:style="'background-color:'+(${status.odd}?'#fff':'#f5f2eb')" align="center"><img
+                th:if="${stock.longSellSignal}" th:src="@{icon/sell.png}" height="20px" width="20px"></td>
+        <td th:style="'background-color:'+(${status.odd}?'#fff':'#f5f2eb')" align="center"><img
+                th:if="${stock.longMinSellSignal}" th:src="@{icon/sell.png}" height="20px" width="20px"></td>
+        <td th:style="'background-color:'+(${status.odd}?'#fff':'#f5f2eb')" align="center"><a
+                th:href="@{'https://xueqiu.com/S/'+${stock.code}}" target="_blank">详情</a></td>
+    </tr>
+    </tbody>
+</table>
+
+
+</body>
+</html>
