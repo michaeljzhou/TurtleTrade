@@ -53,6 +53,8 @@ public class CompanyIndexes {
 
     private Boolean longMinSellSignal;
 
+    private Boolean focusOn;
+
     private String updateDate;
 
 }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--topbar-->
+    <nav class="navbar sticky-top fixed-top navbar-expand-lg navbar-light bg-light" th:fragment="topbar" id="topBar">
+        <div class="collapse navbar-collapse top-bar" id="navbarTogglerDemo02">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" th:href="@{/hold_list}"
+                       th:class="${activeUri=='hold_list'?'nav-link active':'nav-link'}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file ">
+                            <img th:src="@{icon/bag.svg}" alt="chart" width="16" height="16">
+                        </svg>
+                        持有股票
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" th:href="@{/focus_list}"
+                       th:class="${activeUri=='focus_list'?'nav-link active':'nav-link'}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file ">
+                            <img th:src="@{icon/search-heart.svg}" alt="chart" width="16" height="16">
+                        </svg>
+                        重点关注
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" th:href="@{/stocks_ss_indexes}"
+                       th:class="${activeUri=='stocks_ss_indexes'?'nav-link active':'nav-link'}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file ">
+                            <img th:src="@{icon/bar-chart.svg}" alt="chart" width="16" height="16">
+                        </svg>
+                        沪深股票
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" th:href="@{/stocks_hk_indexes}"
+                       th:class="${activeUri=='stocks_hk_indexes'?'nav-link active':'nav-link'}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file ">
+                            <img th:src="@{icon/graph-up-arrow.svg}" alt="chart" width="16" height="16">
+                        </svg>
+                        港股股票
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" th:href="@{/company_manager}"
+                       th:class="${activeUri=='company_manager'?'nav-link active':'nav-link'}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file ">
+                            <img th:src="@{icon/diagram-3.svg}" alt="chart" width="16" height="16">
+                        </svg>
+                        公司管理
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</body>
+</html>

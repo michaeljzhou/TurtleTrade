@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,6 +39,28 @@ public class UpdateIndexService {
 
     @Autowired
     private IndexJsonMapper indexJsonMapper;
+
+    @Autowired
+    private FetchStockIndexService fetchStockIndexService;
+
+    @Autowired
+    private ComputeIndexService computeIndexService;
+
+    @Scheduled(cron = "0 15 16 ? * MON-FRI") //从周一到周五每天下午的3点16分触发
+    public void updateSSIndexes(){
+        // thymeleaf默认就会拼串
+        fetchStockIndexService.fetchSSCurrentPrice();
+
+        computeIndexService.computeSSIndexes();
+    }
+
+    @Scheduled(cron = "0 16 16 ? * MON-FRI") //从周一到周五每天下午的4点16分触发
+    public void updateHKIndexes(){
+        // thymeleaf默认就会拼串
+        fetchStockIndexService.fetchHKCurrentPrice();
+
+        computeIndexService.computeHKIndexes();
+    }
 
     public void updateIndexFromJson() {
         QueryWrapper<IndexJson> wrapper = new QueryWrapper<>();
@@ -74,7 +98,7 @@ public class UpdateIndexService {
                 }
             }
             JSONArray itemArray = (JSONArray) data.get("item");
-            List<Object> indexArray = itemArray.subList(itemArray.size() - 62, itemArray.size() - 1);
+            List<Object> indexArray = itemArray.subList(itemArray.size() - 62, itemArray.size());
 
             JSONArray dayIndex = (JSONArray) indexArray.get(0);
             BigDecimal lastClose = new BigDecimal(dayIndex.get(closeIndex).toString());
@@ -137,4 +161,7 @@ public class UpdateIndexService {
         return index;
     }
 
+    public void save(IndexJson indexJson) {
+        indexJsonMapper.insert(indexJson);
+    }
 }

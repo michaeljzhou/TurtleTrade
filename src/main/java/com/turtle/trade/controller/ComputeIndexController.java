@@ -11,10 +11,18 @@ public class ComputeIndexController {
     @Autowired
     private ComputeIndexService computeIndexService;
 
-    @GetMapping("/ComputeIndexes")
-    public String updateIndex() {
+    @GetMapping("/ComputeHKIndexes")
+    public String updateHKIndex() {
 
-        computeIndexService.computeIndexes();
+        computeIndexService.computeHKIndexes();
+
+        return String.format("Successful!");
+    }
+
+    @GetMapping("/ComputeSSIndexes")
+    public String updateSSIndex() {
+
+        computeIndexService.computeSSIndexes();
 
         return String.format("Successful!");
     }

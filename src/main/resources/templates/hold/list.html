@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="">
+<meta name="author" content="">
+
+<title>海龟交易法则</title>
+<!-- Bootstrap core CSS -->
+<link href="asserts/css/bootstrap.min.css"
+	th:href="@{/webjars/bootstrap/5.2.3/css/bootstrap.css}"
+	rel="stylesheet">
+<link href="asserts/css/main.css"
+	  th:href="@{/asserts/css/main.css}" rel="stylesheet">
+
+<style type="text/css">
+
+</style>
+</head>
+
+<body>
+	<!--引入抽取的topbar-->
+	<!--模板名：会使用thymeleaf的前后缀配置规则进行解析-->
+	<div th:replace="~{commons/bar::#topBar(activeUri='hold_list')}"></div>
+
+	<div class="container-fluid">
+		<div class="row">
+			<hr class="bg-danger border-2 border-top border-danger">
+			<div class="table-responsive">
+
+				<table class="table table-striped table-sm">
+					<thead>
+						<tr>
+							<th>公司名称</th>
+							<th>股票代码</th>
+							<th>ATR</th>
+							<th>MA10</th>
+							<th>MA20</th>
+							<th>MA55</th>
+							<th>收盘价</th>
+							<th>买入价</th>
+							<th>止损价</th>
+							<th>数量</th>
+							<th>总额</th>
+							<th>盈亏</th>
+							<th>卖(短)</th>
+							<th>卖(-1)</th>
+							<th>卖(长)</th>
+							<th>卖(-1)</th>
+							<th>详情</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="stock, status : ${stocks}">
+							<td valign="middle" ><span th:text="${stock.name}"> name </span>
+							</td>
+							<td valign="middle"><span th:text="${stock.code}"> code </span>
+							</td>
+							<td valign="middle"><span
+									th:text="${stock.averageTrueRange}"> averageTrueRange </span></td>
+							<td valign="middle"><span
+									th:text="${stock.ma10Price}"> ma10Price </span></td>
+							<td valign="middle"><span
+									th:text="${stock.ma20Price}"> ma20Price </span></td>
+							<td valign="middle"><span
+									th:text="${stock.ma55Price}"> ma55Price </span></td>
+							<td valign="middle"><span
+									th:text="${stock.lastClose}"> close </span></td>
+							<td valign="middle"><span
+									th:text="${stock.buyPrice}"> buyPrice </span></td>
+							<td valign="middle" th:class="${stock.profitLoss gt 0?'bg-danger':'bg-success'}"><span
+									th:text="${stock.stopLossPrice}"> stopLossPrice </span></td>
+							<td valign="middle"><span
+									th:text="${stock.buyAmount}"> buyPosition </span></td>
+							<td valign="middle"><span
+									th:text="${stock.buyTotalAmount}"> buyPosition </span></td>
+							<td valign="middle" th:class="${stock.profitLoss gt 0?'bg-danger':'bg-success'}"><span
+									th:text="${stock.profitLoss}"> profitLoss </span></td>
+							<td valign="middle" align="center"><img
+									th:if="${stock.shortSellSignal}" th:src="@{icon/sell.png}" height="20px" width="20px"></td>
+							<td valign="middle" align="center"><img
+									th:if="${stock.shortMinSellSignal}" th:src="@{icon/sell.png}" height="20px" width="20px"></td>
+							<td valign="middle" align="center"><img
+									th:if="${stock.longSellSignal}" th:src="@{icon/sell.png}" height="20px" width="20px"></td>
+							<td valign="middle" align="center"><img
+									th:if="${stock.longMinSellSignal}" th:src="@{icon/sell.png}" height="20px" width="20px"></td>
+							<td valign="middle" align="center"><a class="btn btn-sm btn-primary"
+									th:href="@{'https://xueqiu.com/S/'+${stock.code}}" target="_blank">详情</a>
+								<a class="btn btn-sm btn-danger"
+								   th:href="@{'/stock_hold/'+${stock.code}}">卖出</a>
+							</td>
+						</tr>
+						
+					</tbody>
+				</table>
+			</div>
+			<form id="deleteEmpForm" method="post">
+				<input type="hidden" name="_method" value="delete" />
+			</form>
+		</div>
+	</div>
+
+	<!-- Bootstrap core JavaScript
+    ================================================== -->
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script type="text/javascript" th:src="@{/webjars/jquery/3.6.4/jquery.js}"></script>
+	<script type="text/javascript" th:src="@{/webjars/popper.js/1.11.1/dist/popper.js}"></script>
+	<script type="text/javascript" th:src="@{/webjars/bootstrap/5.2.3/js/bootstrap.js}"></script>
+
+
+</body>
+</html>

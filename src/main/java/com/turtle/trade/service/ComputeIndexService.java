@@ -38,8 +38,25 @@ public class ComputeIndexService {
     @Autowired
     private CompanyIndexesMapper companyIndexesMapper;
 
-    public void computeIndexes() {
-        List<Company> companyList = companyMapper.selectList(null);
+
+    public void computeHKIndexes() {
+        QueryWrapper<Company> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("type", "HK");
+        List<Company> companyList = companyMapper.selectList(queryWrapper);
+        computeIndexes(companyList);
+    }
+
+    public void computeSSIndexes() {
+
+        QueryWrapper<Company> queryWrapper = new QueryWrapper<>();
+        queryWrapper.ne("type", "HK");
+        List<Company> companyList = companyMapper.selectList(queryWrapper);
+        computeIndexes(companyList);
+    }
+
+    //@Scheduled(cron = "0 15 16 ? * MON-FRI") //从周一到周五每天下午的4点15分触发
+    //@Scheduled(initialDelay = 1000, fixedRate = 500000)
+    private void computeIndexes(List<Company> companyList) {
 
         try (CloseableHttpClient httpClient = HttpClients.createDefault();) {
             for (Company company : companyList) {
@@ -71,7 +88,7 @@ public class ComputeIndexService {
             StockIndex lastDayIndex = stockIndexList.get(0);
             companyIndexes.setLastClose(lastDayIndex.getClosePrice());
 
-            List<StockIndex> ma10IndexList = stockIndexList.subList(0, 5);
+            List<StockIndex> ma10IndexList = stockIndexList.subList(0, 10);
             BigDecimal ma10IndexCount = ma10IndexList.stream().map(StockIndex::getClosePrice).reduce(BigDecimal.ZERO, BigDecimal::add);
             BigDecimal ma10IndexAverage = ma10IndexCount.divide(BigDecimal.valueOf(ma10IndexList.size()), 3, RoundingMode.DOWN);
             companyIndexes.setMa10Price(ma10IndexAverage);
@@ -85,10 +102,15 @@ public class ComputeIndexService {
             companyIndexes.setAverageTrueRange(averageTrueRange);
             // 买入信号：最后一天收盘价突破20日均价
             companyIndexes.setShortBuySignal(lastDayIndex.getClosePrice().compareTo(ma20IndexAverage) > 0);
+            // 买入信号：最后一天收盘价突破20日均价一个ATR
+            companyIndexes.setShortMaxBuySignal(lastDayIndex.getClosePrice().compareTo(ma20IndexAverage.add(averageTrueRange)) > 0);
             //BigDecimal ma20IndexCount = ma20IndexList.stream().map(StockIndex::getClosePrice).reduce(BigDecimal.ZERO, BigDecimal::add);
 
+            // 卖出信号：最后一天收盘价跌破10日均价
+            companyIndexes.setShortSellSignal(lastDayIndex.getClosePrice().compareTo(ma10IndexAverage) < 0);
             // 卖出信号：最后一天收盘价跌破10日均价一个ATR
-            companyIndexes.setShortSellSignal(lastDayIndex.getClosePrice().compareTo(ma10IndexAverage.subtract(averageTrueRange)) <= 0);
+            companyIndexes.setShortMinSellSignal(lastDayIndex.getClosePrice().compareTo(ma10IndexAverage.subtract(averageTrueRange)) <= 0);
+
 
             List<StockIndex> ma30IndexList = stockIndexList.subList(0, 30);
             BigDecimal ma30IndexCount = ma20IndexList.stream().map(StockIndex::getClosePrice).reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -101,8 +123,12 @@ public class ComputeIndexService {
             companyIndexes.setMa55Price(ma55IndexAverage);
             // 买入信号：最后一天收盘价突破55日均价
             companyIndexes.setLongBuySignal(lastDayIndex.getClosePrice().compareTo(ma55IndexAverage) > 0);
+            // 买入信号：最后一天收盘价突破20日均价一个ATR
+            companyIndexes.setLongMaxBuySignal(lastDayIndex.getClosePrice().compareTo(ma55IndexAverage.add(averageTrueRange)) > 0);
+            // 卖出信号：最后一天收盘价跌破20日均价
+            companyIndexes.setLongSellSignal(lastDayIndex.getClosePrice().compareTo(ma20IndexAverage) <= 0);
             // 卖出信号：最后一天收盘价跌破20日均价一个ATR
-            companyIndexes.setLongSellSignal(lastDayIndex.getClosePrice().compareTo(ma20IndexAverage.subtract(averageTrueRange)) <= 0);
+            companyIndexes.setLongMinBuySignal(lastDayIndex.getClosePrice().compareTo(ma20IndexAverage.subtract(averageTrueRange)) <= 0);
 
             List<StockIndex> ma60IndexList = stockIndexList.subList(0, 60);
             BigDecimal ma60IndexCount = ma60IndexList.stream().map(StockIndex::getClosePrice).reduce(BigDecimal.ZERO, BigDecimal::add);
