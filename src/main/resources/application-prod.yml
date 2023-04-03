@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://121.37.235.89:3306/turtletrade
+    url: jdbc:mysql://127.0.0.1:3306/turtletrade
     username: turtle
     password: Zr@130805
     driver-class-name: com.mysql.cj.jdbc.Driver

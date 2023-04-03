@@ -26,6 +26,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 @Component
 @Slf4j
@@ -60,34 +61,38 @@ public class FetchStockIndexService {
     //@Scheduled(cron = "0 15 16 ? * MON-FRI") //从周一到周五每天下午的4点15分触发
     //@Scheduled(initialDelay = 1000, fixedRate = 500000)
     private void fetchCurrentPrice(List<Company> companyList) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDate = sdf.format(new Date());
+        /* 当前是交易日 */
+        for (Company company : companyList) {
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault();) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            String currentDate = sdf.format(new Date());
-            for (Company company : companyList) {
-                HttpGet httpGet = new HttpGet(GET_URL + company.getCode());
-                httpGet.addHeader("User-Agent", USER_AGENT);
-                CloseableHttpResponse httpResponse = httpClient.execute(httpGet);
-
-                String responseData = getResponseData(httpResponse, company);
-
-                StockIndex stockIndex = getStockIndex(responseData, company);
-
-                /* 判断当前日期是不是交易日, 如果不是，则不进行任何操作 */
-                if (!currentDate.equals(stockIndex.getIndexDate())) {
-                    /* 当前不是交易日 */
-                    break;
-                }
-
+            StockIndex stockIndex = getIndexData(company);
+            /* 判断当前日期是不是交易日, 如果不是，则不进行任何操作 */
+            if (stockIndex != null && currentDate.equals(stockIndex.getIndexDate())) {
                 createOrUpdateIndex(stockIndex);
             }
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
         }
     }
 
+    private StockIndex getIndexData(Company company) {
+        StockIndex stockIndex = null;
+        try (CloseableHttpClient httpClient = HttpClients.createDefault();) {
+            HttpGet httpGet = new HttpGet(GET_URL + company.getCode());
+            httpGet.addHeader("User-Agent", USER_AGENT);
+            CloseableHttpResponse httpResponse = httpClient.execute(httpGet);
+
+            String responseData = getResponseData(httpResponse, company);
+
+            stockIndex = getStockIndex(responseData, company);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        return stockIndex;
+    }
+
+
     private void createOrUpdateIndex(StockIndex stockIndex) {
-        try{
+        try {
             QueryWrapper<StockIndex> wrapper = new QueryWrapper<>();
             wrapper.eq("code", stockIndex.getCode());
             wrapper.eq("index_date", stockIndex.getIndexDate());
@@ -100,7 +105,7 @@ public class FetchStockIndexService {
                 stockIndexMapper.insert(stockIndex);
             }
         } catch (Exception e) {
-            logger.error(stockIndex + ","+ e.getMessage(), e);
+            logger.error(stockIndex + "," + e.getMessage(), e);
         }
     }
 
@@ -131,7 +136,8 @@ public class FetchStockIndexService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             index.setIndexDate(sdf.format(timestamp));
         } catch (Exception e) {
-            logger.error(company + ","+ e.getMessage(), e);
+            logger.error(company + "," + e.getMessage(), e);
+            index = null;
         }
         return index;
     }
@@ -153,7 +159,7 @@ public class FetchStockIndexService {
             reader.close();
             ret = response.toString();
         } catch (IOException e) {
-            logger.error(company + ","+ e.getMessage(), e);
+            logger.error(company + "," + e.getMessage(), e);
         }
         return ret;
     }

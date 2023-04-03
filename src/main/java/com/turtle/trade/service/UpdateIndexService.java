@@ -46,20 +46,22 @@ public class UpdateIndexService {
     @Autowired
     private ComputeIndexService computeIndexService;
 
-    @Scheduled(cron = "0 15 16 ? * MON-FRI") //从周一到周五每天下午的3点16分触发
+    @Scheduled(cron = "0 16 15 ? * 1-5") //从周一到周五每天下午的3点16分触发
     public void updateSSIndexes(){
-        // thymeleaf默认就会拼串
+        logger.info("Start update Shanghai & Shenzhen indexes");
         fetchStockIndexService.fetchSSCurrentPrice();
 
         computeIndexService.computeSSIndexes();
+        logger.info("End update Shanghai & Shenzhen indexes");
     }
 
-    @Scheduled(cron = "0 16 16 ? * MON-FRI") //从周一到周五每天下午的4点16分触发
+    @Scheduled(cron = "0 16 16 ? * 1-5") //从周一到周五每天下午的4点16分触发
     public void updateHKIndexes(){
-        // thymeleaf默认就会拼串
+        logger.info("Start update HongKong indexes");
         fetchStockIndexService.fetchHKCurrentPrice();
 
         computeIndexService.computeHKIndexes();
+        logger.info("End update HongKong shenzhen indexes");
     }
 
     public void updateIndexFromJson() {
