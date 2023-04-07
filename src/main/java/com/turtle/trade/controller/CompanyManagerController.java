@@ -3,13 +3,19 @@ package com.turtle.trade.controller;
 import com.turtle.trade.entity.Company;
 import com.turtle.trade.entity.IndexJson;
 import com.turtle.trade.service.*;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
+@Slf4j
 public class CompanyManagerController {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private CompanyManagerService companyManagerService;
@@ -23,15 +29,22 @@ public class CompanyManagerController {
     @Autowired
     private ComputeIndexService computeIndexService;
 
+    @Autowired
+    private CompanyCategoryService companyCategoryService;
+
     @RequestMapping("/company_manager")
-    public String showAll(Model model, @RequestParam(required = false) String code) {
-        model.addAttribute("companies", companyManagerService.findAll());
+    public String showAll(Model model, @RequestParam(required = false) String searchName, @RequestParam(required = false) String searchCode) {
+        model.addAttribute("companies", companyManagerService.findAll(searchName, searchCode));
+        model.addAttribute("searchName", searchName);
+        model.addAttribute("searchCode", searchCode);
+
         return "company/list";
     }
 
     //来到类别添加页面
     @GetMapping("/company")
     public String toAddPage(Model model){
+        model.addAttribute("categories", companyCategoryService.findAll());
         // thymeleaf默认就会拼串
         // classpath:/templates/xxxx.html
         return "company/add";
@@ -71,7 +84,7 @@ public class CompanyManagerController {
     public String addCompanyData(IndexJson indexJson){
         //来到类别列表页面
 
-        System.out.println("保存的信息："+indexJson);
+        logger.info("保存的信息："+indexJson);
         //保存类别
         updateIndexService.save(indexJson);
         // redirect: 表示重定向到一个地址  /代表当前项目路径
@@ -84,6 +97,7 @@ public class CompanyManagerController {
     public String toEditPage(@PathVariable("code") String code, Model model){
         Company company = companyManagerService.get(code);
         model.addAttribute("company",company);
+        model.addAttribute("categories", companyCategoryService.findAll());
 
         //回到修改页面(add是一个修改添加二合一的页面);
         return "company/add";
@@ -93,7 +107,7 @@ public class CompanyManagerController {
     public String addCompany(Company company){
         //来到类别列表页面
 
-        System.out.println("保存的信息："+company);
+        logger.info("保存的信息："+company);
         //保存类别
         companyManagerService.save(company);
         // redirect: 表示重定向到一个地址  /代表当前项目路径
@@ -103,7 +117,7 @@ public class CompanyManagerController {
 
     @PutMapping("/company")
     public String updateCompany(Company company){
-        System.out.println("修改的数据："+company);
+        logger.info("修改的数据："+company);
         companyManagerService.update(company);
         return "redirect:/company_manager";
     }

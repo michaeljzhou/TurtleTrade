@@ -85,6 +85,7 @@ public class ComputeIndexService {
             companyIndexes.setCode(company.getCode());
             companyIndexes.setName(company.getName());
             companyIndexes.setType(company.getType());
+            companyIndexes.setCategoryId(company.getCategoryId());
             StockIndex lastDayIndex = stockIndexList.get(0);
             companyIndexes.setLastClose(lastDayIndex.getClosePrice());
 

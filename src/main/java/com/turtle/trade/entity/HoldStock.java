@@ -21,11 +21,17 @@ public class HoldStock {
 
     private BigDecimal buyPrice;
 
+    private BigDecimal sellPrice;
+
     private BigDecimal stopLossPrice;
 
     private BigDecimal buyAmount;
 
     private BigDecimal buyTotalAmount;
+
+    private BigDecimal profitLoss;
+
+    private Boolean holdFlag;
 
     private String updateDate;
 

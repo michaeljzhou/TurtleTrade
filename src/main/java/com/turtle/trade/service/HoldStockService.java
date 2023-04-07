@@ -39,4 +39,16 @@ public class HoldStockService {
             holdStockMapper.insert(holdStock);
         }
     }
+
+    public HoldStock get(String code) {
+        QueryWrapper<HoldStock> wrapper = new QueryWrapper<>();
+        wrapper.eq("code", code);
+        return holdStockMapper.selectOne(wrapper);
+    }
+
+    public HoldStock get(Long id) {
+        QueryWrapper<HoldStock> wrapper = new QueryWrapper<>();
+        wrapper.eq("id", id);
+        return holdStockMapper.selectOne(wrapper);
+    }
 }
